@@ -1,0 +1,36 @@
+# .NET artifacts
+bin/
+obj/
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+*.dll
+*.exe
+*.app
+*.pdb
+*.cache
+*.log
+*.vspscc
+*.vssscc
+
+# Visual Studio
+.vs/
+.vscode/
+*.dbmdl
+*.dbproj.schemaview
+
+# Docker
+Dockerfile.*
+docker-compose.*
+
+# Dependency caches
+project.lock.json
+project.fragment.lock.json
+artifacts/
+project.nuget.cache
+*.nuget.props
+*.nuget.targets

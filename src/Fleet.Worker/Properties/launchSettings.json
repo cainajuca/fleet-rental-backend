@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Fleet.Worker": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
