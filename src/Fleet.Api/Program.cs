@@ -1,4 +1,5 @@
-﻿using Fleet.Infra.Database;
+﻿using Fleet.Api._4_Infra.Database;
+using Fleet.Infra.Database;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,8 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
+
+    SeedData.SeedAdmin(dbContext);
 }
 
 // Configure the HTTP request pipeline.
