@@ -1,0 +1,60 @@
+version: '3.8'
+services:
+  api:
+    build:
+      context: ./src/Fleet.Api
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+    depends_on:
+      - db
+      - rabbitmq
+      - minio
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  worker:
+    build:
+      context: ./src/Fleet.Worker
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+      - api
+    environment:
+      - API_BASE_URL=http://api
+      - RABBITMQ_HOST=rabbitmq
+      - MINIO_ENDPOINT=minio
+      - BUCKET_NAME=cnh-images
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: fleet
+      POSTGRES_PASSWORD: fleet123
+      POSTGRES_DB: fleetdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123
+    command: server /data --console-address ":9001"
+
+volumes:
+  minio_data:
+  pgdata:

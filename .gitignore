@@ -23,10 +23,6 @@ obj/
 *.dbmdl
 *.dbproj.schemaview
 
-# Docker
-Dockerfile.*
-docker-compose.*
-
 # Dependency caches
 project.lock.json
 project.fragment.lock.json
