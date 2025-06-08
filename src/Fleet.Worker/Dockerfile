@@ -1,19 +1,19 @@
-# Build stage
+# Step 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# Copia o csproj e restaura dependências
+# Restores only the main project
 COPY *.csproj ./
 RUN dotnet restore
 
-# Copia todo o código e publica
+# Copies the rest of the files and publishes
 COPY . .
 RUN dotnet publish -c Release -o out /p:UseAppHost=false
 
-# Runtime stage
+# Step 2: Runtime
 FROM mcr.microsoft.com/dotnet/runtime:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/out .
 
-# Não expomos portas, pois é um worker
+# No ports are exposed as this is a worker service
 ENTRYPOINT ["dotnet", "Fleet.Worker.dll"]
