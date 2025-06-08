@@ -32,10 +32,6 @@ public class DeliverymanConfiguration : IEntityTypeConfiguration<Deliveryman>
             .HasMaxLength(14);
 
         builder
-            .Property(x => x.BirthDate)
-            .IsRequired();
-
-        builder
             .Property(x => x.CnhNumber)
             .IsRequired()
             .HasMaxLength(11);
@@ -51,13 +47,15 @@ public class DeliverymanConfiguration : IEntityTypeConfiguration<Deliveryman>
             .HasMaxLength(500);
 
         builder
-            .Property(x => x.CreatedAt)
-            .IsRequired();
-
-        builder
             .HasOne(x => x.AppUser)
             .WithOne()
             .HasForeignKey<Deliveryman>(x => x.AppUserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder
+            .HasMany(d => d.Rentals)
+            .WithOne(x => x.Deliveryman)
+            .HasForeignKey(x => x.DeliverymanId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

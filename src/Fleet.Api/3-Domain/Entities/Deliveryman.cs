@@ -1,4 +1,6 @@
-﻿namespace Fleet.Domain.Entities;
+﻿using Fleet.Api._3_Domain.Entities;
+
+namespace Fleet.Domain.Entities;
 public class Deliveryman : BaseEntity
 {
     public Guid AppUserId { get; set; }
@@ -11,4 +13,6 @@ public class Deliveryman : BaseEntity
     public string CnhType { get; set; } = null!;
     public string CnhImageUrl { get; set; } = null!;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public ICollection<Rental> Rentals { get; set; } = [];
 }
