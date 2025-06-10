@@ -1,4 +1,5 @@
 ﻿using Fleet.Api._3_Domain.Repositories;
+using Fleet.Api._3_Domain.Services;
 using Fleet.Domain.Constants.Enums;
 using Fleet.Domain.Entities;
 using MediatR;
@@ -10,20 +11,22 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
 {
     private readonly IUserRepository _userRepo;
     private readonly IDeliverymanRepository _deliverymanRepo;
-    //private readonly IStorageService _storage;
+    private readonly IFileStorageService _fileStorage;
     private readonly IPasswordHasher<AppUser> _hasher;
+    private readonly ILogger<RegisterUserUseCase> _logger;
 
     public RegisterUserUseCase(
         IUserRepository userRepo,
         IDeliverymanRepository delRepo,
-        //IStorageService storage,
-        IPasswordHasher<AppUser> hasher
-    )
+        IFileStorageService fileStorage,
+        IPasswordHasher<AppUser> hasher,
+        ILogger<RegisterUserUseCase> logger)
     {
         _userRepo = userRepo;
         _deliverymanRepo = delRepo;
-        //_storage = storage;
+        _fileStorage = fileStorage;
         _hasher = hasher;
+        _logger = logger;
     }
     public async Task<RegisterUserOutput> Handle(RegisterUserInput input, CancellationToken ct)
     {
@@ -35,9 +38,9 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
         if (contentType != "image/png" && contentType != "image/bmp" && contentType != "image/x-ms-bmp")
             return RegisterUserOutput.Failure("Invalid Content-Type. Only image/png or image/bmp");
 
-        // TODO: persist CnhImage on MinIO and get the URL
-        string cnhImageUrl = "https://minio.example.com/cnh-images/" + input.CnhImage.FileName;
-        //string cnhImageUrl = await _storage.UploadAsync("cnh-images", input.CnhImage.FileName, input.CnhImage.OpenReadStream(), contentType);
+        var imageSuccessfullyStored = await UploadCnhIntoFileStorage(input);
+        if (!imageSuccessfullyStored)
+            return RegisterUserOutput.Failure("Failed to upload CNH image for user {Username}", input.Username);
 
         var exists = await _userRepo.ExistsByUsernameAsync(input.Username);
         if (exists)
@@ -73,5 +76,20 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
         await _userRepo.SaveChangesAsync();
 
         return RegisterUserOutput.Success(user.Id);
+    }
+
+    private async Task<bool> UploadCnhIntoFileStorage(RegisterUserInput input)
+    {
+        try
+        {
+            await _fileStorage.UploadAsync(input.CnhImage.OpenReadStream(), input.CnhNumber, input.CnhImage.ContentType);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to upload CNH image for user {Username}", input.Username);
+            return false;
+        }
+
+        return true;
     }
 }

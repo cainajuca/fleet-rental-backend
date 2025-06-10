@@ -1,7 +1,9 @@
 ﻿using Fleet.Api._2_Application.Services;
 using Fleet.Api._3_Domain.Repositories;
+using Fleet.Api._3_Domain.Services;
 using Fleet.Api._4_Infra.Database;
 using Fleet.Api._4_Infra.Database.Repositories;
+using Fleet.Api._4_Infra.FileStorage;
 using Fleet.Domain.Entities;
 using Fleet.Infra.Database;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -42,6 +44,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDeliverymanRepository, DeliverymanRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IFileStorageService, MinioFileStorageService>();
 
 builder.Services.AddScoped<IPasswordHasher<AppUser>, PasswordHasher<AppUser>>();
 
