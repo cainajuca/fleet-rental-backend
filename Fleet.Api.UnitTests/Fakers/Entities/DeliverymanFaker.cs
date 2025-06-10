@@ -13,6 +13,5 @@ public class DeliverymanFaker : Faker<Deliveryman>
         RuleFor(x => x.BirthDate, f => f.Date.Past(30)); // 30 years ago
         RuleFor(x => x.CnhNumber, f => f.Random.AlphaNumeric(10));
         RuleFor(x => x.CnhType, _ => "A");
-        RuleFor(x => x.CnhImageUrl, _ => null!); // Set later in tests
     }
 }

@@ -11,7 +11,6 @@ public class Deliveryman : BaseEntity
     public DateTime BirthDate { get; set; }
     public string CnhNumber { get; set; } = null!;
     public string CnhType { get; set; } = null!;
-    public string CnhImageUrl { get; set; } = null!;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public ICollection<Rental> Rentals { get; set; } = [];

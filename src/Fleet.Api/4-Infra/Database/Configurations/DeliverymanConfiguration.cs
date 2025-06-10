@@ -42,11 +42,6 @@ public class DeliverymanConfiguration : IEntityTypeConfiguration<Deliveryman>
             .HasMaxLength(5);
 
         builder
-            .Property(x => x.CnhImageUrl)
-            .IsRequired()
-            .HasMaxLength(500);
-
-        builder
             .HasOne(x => x.AppUser)
             .WithOne()
             .HasForeignKey<Deliveryman>(x => x.AppUserId)

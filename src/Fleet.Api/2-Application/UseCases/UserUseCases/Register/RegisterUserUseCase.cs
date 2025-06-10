@@ -64,7 +64,6 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
             BirthDate = input.BirthDate,
             CnhNumber = input.CnhNumber,
             CnhType = input.CnhType,
-            CnhImageUrl = cnhImageUrl
         };
 
         // TODO: add domain validation for Deliveryman
