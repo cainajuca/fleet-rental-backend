@@ -1,12 +1,15 @@
-﻿using Fleet.Api._2_Application.Services;
+﻿using Fleet.Api._1_Presentation.ViewModels;
+using Fleet.Api._2_Application.Services;
 using Fleet.Api._2_Application.UseCases;
 using Fleet.Api._2_Application.UseCases.UserUseCases.Register;
+using Fleet.Api._2_Application.UseCases.UserUseCases.Remove;
 using Fleet.Api._3_Domain.Repositories;
 using Fleet.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace Fleet.Api._1_Presentation.Controllers;
 
@@ -34,7 +37,27 @@ public class UserController : ControllerBase
         _authService = authService;
     }
 
-    [HttpGet("{id}", Name = nameof(GetUserById))]
+    [HttpGet]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        //Expression<Func<AppUser, bool>> predicate = u => u.Role == UserRole.Deliveryman; // production code
+        Expression<Func<AppUser, bool>> predicate = u => true;
+        Expression<Func<AppUser, AppUserVM>> selector = u => new AppUserVM
+        {
+            Id = u.Id,
+            Username = u.Username,
+            Email = u.Email,
+            Role = u.Role!.Value
+        };
+
+        var users = await _userRepo.GetAllAsync(predicate, selector);
+
+        var output = BaseOutput<object>.Success(users);
+
+        return Ok(output);
+    }
+
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetUserById(Guid id)
     {
         var user = await _userRepo.GetByIdAsync(id);
@@ -84,6 +107,19 @@ public class UserController : ControllerBase
         var output = BaseOutput<LoginResponseDto>.Success(new LoginResponseDto { Token = token });
 
         return Ok(output);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        RemoveUserInput input = new(id);
+
+        var result = await _mediator.Send(input);
+
+        if (!result.IsSuccess)
+            return BadRequest(result);
+
+        return Ok(result);
     }
 }
 

@@ -20,8 +20,14 @@ public class Repository<T> : IRepository<T> where T : class
         _dbSet = _context.Set<T>();
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync()
-        => await _dbSet.ToListAsync();
+    public async Task<IEnumerable<T>> GetAllAsync() =>
+        await _dbSet.ToListAsync();
+
+    public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Expression<Func<T, bool>> predicate, Expression<Func<T, TResult>> selector) =>
+        await _dbSet
+            .Where(predicate)
+            .Select(selector)
+            .ToListAsync();
 
     public async Task<T?> GetByIdAsync(Guid id)
         => await _dbSet.FindAsync(id);
