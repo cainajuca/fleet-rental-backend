@@ -15,17 +15,20 @@ namespace Fleet.Api._1_Presentation.Controllers;
 public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
+    private readonly IPasswordHasher<AppUser> _hasher;
     private readonly IUserRepository _userRepo;
     private readonly IMediator _mediator;
     private readonly IAuthService _authService;
 
     public UserController(
         ILogger<UserController> logger, // TODO: use logger in methods
+        IPasswordHasher<AppUser> hasher,
         IUserRepository userRepo,
         IMediator mediator,
         IAuthService authService)
     {
         _logger = logger;
+        _hasher = hasher;
         _userRepo = userRepo;
         _mediator = mediator;
         _authService = authService;
@@ -73,14 +76,14 @@ public class UserController : ControllerBase
         if (user == null)
             return Unauthorized(BaseOutput<string>.Failure("User not found"));
 
-        var hasher = new PasswordHasher<AppUser>();
-        var result = hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+        var result = _hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
         if (result == PasswordVerificationResult.Failed)
             return Unauthorized(BaseOutput<string>.Failure("Incorrect password"));
 
         var token = _authService.CreateToken(user);
-        var output = BaseOutput<object>.Success(new { token });
-        return Ok(new { output });
+        var output = BaseOutput<LoginResponseDto>.Success(new LoginResponseDto { Token = token });
+
+        return Ok(output);
     }
 }
 
@@ -88,6 +91,11 @@ public class LoginDto
 {
     public string Username { get; set; } = null!;
     public string Password { get; set; } = null!;
+}
+
+public class LoginResponseDto
+{
+    public string Token { get; init; } = null!;
 }
 
 /*
