@@ -58,10 +58,10 @@ public class EntregadoresController : ControllerBase
         return Ok(users);
     }
 
-    [HttpGet("{identificador}")]
-    public async Task<IActionResult> GetDeliverymanByUsername(string identificador)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetDeliverymanByUsername(string id)
     {
-        var user = await _userRepo.GetUserByUsernameAsync(identificador);
+        var user = await _userRepo.GetUserByUsernameAsync(id);
 
         if (user == null)
             return NotFound("Entregador não encontrado");
@@ -109,10 +109,10 @@ public class EntregadoresController : ControllerBase
         return Ok(output);
     }
 
-    [HttpDelete("{identificador}")]
-    public async Task<IActionResult> Delete(string identificador)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(string id)
     {
-        RemoveUserInput input = new(identificador);
+        RemoveUserInput input = new(id);
 
         var result = await _mediator.Send(input);
 
@@ -125,7 +125,7 @@ public class EntregadoresController : ControllerBase
 
 public class LoginDto
 {
-    [JsonPropertyName("identificador")]
+    [JsonPropertyName("id")]
     public string Username { get; set; } = null!;
 
     [JsonPropertyName("senha")]
