@@ -1,4 +1,5 @@
-﻿using Fleet.Api._3_Domain.Interfaces.Repositories;
+﻿using Fleet.Api._3_Domain.Constants.Enums;
+using Fleet.Api._3_Domain.Interfaces.Repositories;
 using Fleet.Api._3_Domain.Interfaces.Services;
 using Fleet.Domain.Constants.Enums;
 using Fleet.Domain.Entities;
@@ -49,7 +50,10 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
 
         user.PasswordHash = _hasher.HashPassword(user, input.Password);
 
-        // TODO: add domain validation for AppUser
+        var cnhTypeIsValid = ValidateCnhType(input.CnhType, out CnhType cnh);
+        if (!cnhTypeIsValid)
+            return RegisterUserOutput.Failure("Dados inválidos");
+
         await _userRepo.AddAsync(user);
 
         var deliveryman = new Deliveryman
@@ -60,7 +64,7 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
             Cnpj = input.Cnpj,
 
             CnhNumber = input.CnhNumber,
-            CnhType = input.CnhType,
+            CnhType = cnh,
         };
 
         // TODO: add domain validation for Deliveryman
@@ -85,5 +89,11 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
         }
 
         return true;
+    }
+
+    private static bool ValidateCnhType(string cnhType, out CnhType cnh)
+    {
+        // TODO: move to Domain.Validators with FluentValidation
+        return Enum.TryParse(cnhType, out cnh);
     }
 }

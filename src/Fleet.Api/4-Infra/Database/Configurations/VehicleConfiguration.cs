@@ -9,17 +9,20 @@ public class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
     {
         builder.HasKey(x => x.Id);
 
+        builder.HasIndex(v => v.Identifier)
+           .IsUnique();
+
         builder.Property(v => v.Identifier)
-               .IsRequired()
-               .HasMaxLength(50);
+            .IsRequired()
+            .HasMaxLength(50);
 
         builder.Property(v => v.Model)
-               .IsRequired()
-               .HasMaxLength(100);
+            .IsRequired()
+            .HasMaxLength(100);
 
         builder.Property(v => v.LicensePlate)
-               .IsRequired()
-               .HasMaxLength(20);
+            .IsRequired()
+            .HasMaxLength(20);
 
         builder
             .HasMany(v => v.Rentals)

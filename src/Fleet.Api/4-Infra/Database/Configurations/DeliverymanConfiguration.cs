@@ -32,11 +32,6 @@ public class DeliverymanConfiguration : IEntityTypeConfiguration<Deliveryman>
             .HasMaxLength(11);
 
         builder
-            .Property(x => x.CnhType)
-            .IsRequired()
-            .HasMaxLength(5);
-
-        builder
             .HasOne(x => x.AppUser)
             .WithOne(x => x.Deliveryman)
             .HasForeignKey<Deliveryman>(x => x.AppUserId)

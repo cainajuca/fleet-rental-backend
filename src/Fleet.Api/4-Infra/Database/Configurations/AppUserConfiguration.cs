@@ -10,6 +10,9 @@ public class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
     {
         builder.HasKey(x => x.Id);
 
+        builder.HasIndex(v => v.Username)
+           .IsUnique();
+
         builder
             .Property(x => x.Username)
             .IsRequired()

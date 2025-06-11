@@ -1,4 +1,5 @@
-﻿using Fleet.Api._3_Domain.Entities;
+﻿using Fleet.Api._3_Domain.Constants.Enums;
+using Fleet.Api._3_Domain.Entities;
 
 namespace Fleet.Domain.Entities;
 public class Deliveryman : BaseEntity
@@ -8,7 +9,7 @@ public class Deliveryman : BaseEntity
 
     public string Cnpj { get; set; } = null!;
     public string CnhNumber { get; set; } = null!;
-    public string CnhType { get; set; } = null!;
+    public CnhType CnhType { get; set; }
 
     public ICollection<Rental> Rentals { get; set; } = [];
 }
