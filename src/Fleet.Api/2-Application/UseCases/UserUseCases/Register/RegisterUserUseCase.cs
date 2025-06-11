@@ -30,14 +30,6 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
     }
     public async Task<RegisterUserOutput> Handle(RegisterUserInput input, CancellationToken ct)
     {
-        var ext = Path.GetExtension(input.CnhImage.FileName).ToLowerInvariant();
-        if (ext != ".png" && ext != ".bmp")
-            return RegisterUserOutput.Failure("Invalid format. Only PNG and BMP are allowed for CnhImage");
-
-        var contentType = input.CnhImage.ContentType;
-        if (contentType != "image/png" && contentType != "image/bmp" && contentType != "image/x-ms-bmp")
-            return RegisterUserOutput.Failure("Invalid Content-Type. Only image/png or image/bmp");
-
         var imageSuccessfullyStored = await UploadCnhIntoFileStorage(input);
         if (!imageSuccessfullyStored)
             return RegisterUserOutput.Failure("Failed to upload CNH image for user {Username}", input.Username);
@@ -49,7 +41,9 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
         var user = new AppUser
         {
             Username = input.Username,
-            Email = input.Email,
+
+            Name = input.Name,
+            BirthDate = input.BirthDate,
             Role = UserRole.Deliveryman
         };
 
@@ -62,9 +56,9 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
         {
             AppUserId = user.Id,
 
-            Name = input.Name,
+            
             Cnpj = input.Cnpj,
-            BirthDate = input.BirthDate,
+            
             CnhNumber = input.CnhNumber,
             CnhType = input.CnhType,
         };
@@ -75,14 +69,14 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
 
         await _userRepo.SaveChangesAsync();
 
-        return RegisterUserOutput.Success(user.Id);
+        return RegisterUserOutput.Success(user.Username);
     }
 
     private async Task<bool> UploadCnhIntoFileStorage(RegisterUserInput input)
     {
         try
         {
-            await _fileStorage.UploadAsync(input.CnhImage.OpenReadStream(), input.CnhNumber, input.CnhImage.ContentType);
+            await _fileStorage.UploadAsync(input.CnhImage, input.CnhNumber);
         }
         catch (Exception ex)
         {

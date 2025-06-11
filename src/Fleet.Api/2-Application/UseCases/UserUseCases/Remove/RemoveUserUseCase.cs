@@ -18,7 +18,7 @@ public class RemoveUserUseCase : IRequestHandler<RemoveUserInput, RemoveUserOutp
 
     public async Task<RemoveUserOutput> Handle(RemoveUserInput input, CancellationToken ct)
     {
-        var user = await _userRepo.GetByIdAsync(input.Id);
+        var user = await _userRepo.GetByUsernameAsync(input.Username);
         if (user == null)
             return RemoveUserOutput.Failure("User does not exist");
 
@@ -26,6 +26,6 @@ public class RemoveUserUseCase : IRequestHandler<RemoveUserInput, RemoveUserOutp
 
         await _userRepo.SaveChangesAsync();
 
-        return RemoveUserOutput.Success(user.Id);
+        return RemoveUserOutput.Success(user.Username);
     }
 }

@@ -22,11 +22,6 @@ public class DeliverymanConfiguration : IEntityTypeConfiguration<Deliveryman>
             .IsUnique();
 
         builder
-            .Property(x => x.Name)
-            .IsRequired()
-            .HasMaxLength(150);
-
-        builder
             .Property(x => x.Cnpj)
             .IsRequired()
             .HasMaxLength(14);
@@ -43,7 +38,7 @@ public class DeliverymanConfiguration : IEntityTypeConfiguration<Deliveryman>
 
         builder
             .HasOne(x => x.AppUser)
-            .WithOne()
+            .WithOne(x => x.Deliveryman)
             .HasForeignKey<Deliveryman>(x => x.AppUserId)
             .OnDelete(DeleteBehavior.Cascade);
 

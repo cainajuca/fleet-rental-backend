@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Fleet.Api._3_Domain.Services;
+using System.Text.RegularExpressions;
 
 namespace Fleet.Api._4_Infra.FileStorage;
 
@@ -34,6 +35,27 @@ public class MinioFileStorageService : IFileStorageService
         var exists = bucketList.Any(b => b.BucketName == _bucketName);
         if (!exists)
             await _s3Client.PutBucketAsync(new PutBucketRequest { BucketName = _bucketName });
+    }
+
+    public async Task UploadAsync(string base64File, string fileName)
+    {
+        _logger.LogInformation("Uploading file: {FileName}", fileName);
+
+        var imageBytes = Convert.FromBase64String(Regex.Replace(base64File, @"^data:[\w\/\-\+\.]+;base64,", ""));
+        using var stream = new MemoryStream(imageBytes);
+
+        var mimeTypeMatch = Regex.Match(base64File, @"^data:(?<mime>[\w\/\-\+\.]+);base64,", RegexOptions.IgnoreCase);
+        var contentType = mimeTypeMatch.Success ? mimeTypeMatch.Groups["mime"].Value : "application/octet-stream";
+
+        var putRequest = new PutObjectRequest
+        {
+            BucketName = _bucketName,
+            Key = fileName,
+            InputStream = stream,
+            ContentType = contentType
+        };
+
+        await _s3Client.PutObjectAsync(putRequest);
     }
 
     public async Task UploadAsync(Stream fileStream, string fileName, string contentType)

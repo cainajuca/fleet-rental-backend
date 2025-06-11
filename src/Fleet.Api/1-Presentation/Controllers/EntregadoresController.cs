@@ -4,27 +4,29 @@ using Fleet.Api._2_Application.UseCases;
 using Fleet.Api._2_Application.UseCases.UserUseCases.Register;
 using Fleet.Api._2_Application.UseCases.UserUseCases.Remove;
 using Fleet.Api._3_Domain.Repositories;
+using Fleet.Domain.Constants.Enums;
 using Fleet.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
+using System.Text.Json.Serialization;
 
 namespace Fleet.Api._1_Presentation.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class UserController : ControllerBase
+[Route("[controller]")]
+public class EntregadoresController : ControllerBase
 {
-    private readonly ILogger<UserController> _logger;
+    private readonly ILogger<EntregadoresController> _logger;
     private readonly IPasswordHasher<AppUser> _hasher;
     private readonly IUserRepository _userRepo;
     private readonly IMediator _mediator;
     private readonly IAuthService _authService;
 
-    public UserController(
-        ILogger<UserController> logger, // TODO: use logger in methods
+    public EntregadoresController(
+        ILogger<EntregadoresController> logger, // TODO: use logger in methods
         IPasswordHasher<AppUser> hasher,
         IUserRepository userRepo,
         IMediator mediator,
@@ -37,57 +39,58 @@ public class UserController : ControllerBase
         _authService = authService;
     }
 
+    // TODO: implement authorization for these endpoints
+
     [HttpGet]
-    public async Task<IActionResult> GetAllUsers()
+    public async Task<IActionResult> GetAllDeliverymen()
     {
-        //Expression<Func<AppUser, bool>> predicate = u => u.Role == UserRole.Deliveryman; // production code
-        Expression<Func<AppUser, bool>> predicate = u => true;
-        Expression<Func<AppUser, AppUserVM>> selector = u => new AppUserVM
+        Expression<Func<AppUser, bool>> predicate = u => u.Role == UserRole.Deliveryman;
+        Expression<Func<AppUser, DeliverymanVM>> selector = u => new DeliverymanVM
         {
-            Id = u.Id,
-            Username = u.Username,
-            Email = u.Email,
-            Role = u.Role!.Value
+            Identificador = u.Username,
+            Nome = u.Name,
+            Cnpj = u.Deliveryman!.Cnpj,
+            DataNascimento = u.BirthDate,
+            Papel = u.Role!.Value.ToString(),
         };
 
         var users = await _userRepo.GetAllAsync(predicate, selector);
 
-        var output = BaseOutput<object>.Success(users);
+        var output = BaseOutput<IEnumerable<DeliverymanVM>>.Success(users);
 
         return Ok(output);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetUserById(Guid id)
+    [HttpGet("{identificador}")]
+    public async Task<IActionResult> GetDeliverymanByUsername(string identificador)
     {
-        var user = await _userRepo.GetByIdAsync(id);
+        var user = await _userRepo.GetUserByUsernameAsync(identificador);
 
         if (user == null)
             return NotFound(BaseOutput<string>.Failure("User not found."));
 
-        var output = BaseOutput<object>.Success(new
+        var output = BaseOutput<DeliverymanVM>.Success(new DeliverymanVM
         {
-            user.Id,
-            user.Username,
-            user.Email,
-            user.Role,
+            Identificador = user.Username,
+            Nome = user.Name,
+            Cnpj = user.Deliveryman != null ? user.Deliveryman!.Cnpj : null,
+            DataNascimento = user.BirthDate,
+            Papel = user.Role!.Value.ToString(),
         });
 
         return Ok(output);
     }
 
-    [HttpPost("register")]
+    [HttpPost]
     [AllowAnonymous]
-    [Consumes("multipart/form-data")]
-    public async Task<IActionResult> Register(RegisterUserInput input)
+    public async Task<IActionResult> Register([FromBody] RegisterUserInput input)
     {
-
         var result = await _mediator.Send(input);
 
         if (!result.IsSuccess)
             return BadRequest(result);
 
-        return StatusCode(StatusCodes.Status201Created, result);
+        return StatusCode(StatusCodes.Status201Created);
     }
 
     [HttpPost("login")]
@@ -109,10 +112,10 @@ public class UserController : ControllerBase
         return Ok(output);
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete("{identificador}")]
+    public async Task<IActionResult> Delete(string identificador)
     {
-        RemoveUserInput input = new(id);
+        RemoveUserInput input = new(identificador);
 
         var result = await _mediator.Send(input);
 
@@ -125,7 +128,10 @@ public class UserController : ControllerBase
 
 public class LoginDto
 {
+    [JsonPropertyName("identificador")]
     public string Username { get; set; } = null!;
+
+    [JsonPropertyName("senha")]
     public string Password { get; set; } = null!;
 }
 
@@ -133,10 +139,3 @@ public class LoginResponseDto
 {
     public string Token { get; init; } = null!;
 }
-
-/*
-Valid fields for testing:
-  "cnpj": "62173620000180",
-  "birthDate": "1997-03-04T00:00:00",
-  "cnhNumber": "06601432083"
-*/

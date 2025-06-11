@@ -16,10 +16,6 @@ public class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
             .HasMaxLength(100);
 
         builder
-            .Property(x => x.Email)
-            .IsRequired();
-
-        builder
             .Property(x => x.PasswordHash)
             .IsRequired();
 

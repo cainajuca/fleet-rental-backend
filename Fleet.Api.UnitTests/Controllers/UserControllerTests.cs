@@ -1,4 +1,5 @@
 ﻿using Fleet.Api._1_Presentation.Controllers;
+using Fleet.Api._1_Presentation.ViewModels;
 using Fleet.Api._2_Application.Services;
 using Fleet.Api._2_Application.UseCases;
 using Fleet.Api._2_Application.UseCases.UserUseCases.Register;
@@ -17,16 +18,16 @@ using Moq;
 namespace Fleet.Api.UnitTests.Controllers;
 public class UserControllerTests
 {
-    private readonly Mock<ILogger<UserController>> _logger = new();
+    private readonly Mock<ILogger<EntregadoresController>> _logger = new();
     private readonly Mock<IUserRepository> _userRepo = new();
     private readonly Mock<IMediator> _mediator = new();
     private readonly Mock<IAuthService> _authSvc = new();
     private readonly Mock<IPasswordHasher<AppUser>> _hasher = new();
-    private readonly UserController _controller;
+    private readonly EntregadoresController _controller;
 
     public UserControllerTests()
     {
-        _controller = new UserController(
+        _controller = new EntregadoresController(
             _logger.Object,
             _hasher.Object,
             _userRepo.Object,
@@ -36,7 +37,7 @@ public class UserControllerTests
     }
 
     [Fact]
-    public async Task GetUserById_WhenUserExists_Returns200Ok()
+    public async Task GetDeliverymanByUsername_WhenUserExists_Returns200Ok()
     {
         // Arrange
         var user = new AppUserFaker()
@@ -44,24 +45,24 @@ public class UserControllerTests
             .UseSeed(234).Generate();
 
         _userRepo
-            .Setup(r => r.GetByIdAsync(user.Id))
+            .Setup(r => r.GetUserByUsernameAsync(user.Username))
             .ReturnsAsync(user);
 
         // Act
-        var action = await _controller.GetUserById(user.Id);
+        var action = await _controller.GetDeliverymanByUsername(user.Username);
 
         // Assert
         var ok = action as OkObjectResult;
         Assert.NotNull(ok);
         Assert.Equal(StatusCodes.Status200OK, ok.StatusCode);
 
-        var output = ok.Value as BaseOutput<object>;
+        var output = ok.Value as BaseOutput<DeliverymanVM>;
         Assert.NotNull(output);
         Assert.True(output.IsSuccess);
     }
 
     [Fact]
-    public async Task GetUserById_WhenUserNotFound_Returns404()
+    public async Task GetDeliverymanByUsername_WhenUserNotFound_Returns404()
     {
         // Arrange
         _userRepo
@@ -69,7 +70,7 @@ public class UserControllerTests
             .ReturnsAsync((AppUser?)null);
 
         // Act
-        var action = await _controller.GetUserById(Guid.NewGuid());
+        var action = await _controller.GetDeliverymanByUsername("test123");
 
         // Assert
         var nf = action as NotFoundObjectResult;
@@ -83,13 +84,9 @@ public class UserControllerTests
         // Arrange
         var input = new RegisterUserInputFaker().UseSeed(234).Generate();
 
-        input.CnhImage = new FormFile(new MemoryStream(new byte[128]), 0, 128, "CnhImage", "cnh.jpg")
-        {
-            Headers = new HeaderDictionary(),
-            ContentType = "image/jpeg"
-        };
+        input.CnhImage = "base64-text";
 
-        var output = RegisterUserOutput.Success(Guid.NewGuid());
+        var output = RegisterUserOutput.Success("test123");
 
         _mediator
             .Setup(m => m.Send(input, It.IsAny<CancellationToken>()))
@@ -99,7 +96,7 @@ public class UserControllerTests
         var action = await _controller.Register(input);
 
         // Assert
-        var created = action as ObjectResult;
+        var created = action as StatusCodeResult;
         Assert.NotNull(created);
         Assert.Equal(StatusCodes.Status201Created, created.StatusCode);
     }

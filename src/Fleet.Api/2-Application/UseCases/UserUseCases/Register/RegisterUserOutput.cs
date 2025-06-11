@@ -1,15 +1,15 @@
 ﻿namespace Fleet.Api._2_Application.UseCases.UserUseCases.Register;
 
-public class RegisterUserOutput : BaseOutput<Guid>
+public class RegisterUserOutput : BaseOutput<string>
 {
-    public Guid? Id { get; private set; }
+    public string? Identificador { get; private set; }
 
     private RegisterUserOutput() { }
 
-    public static new RegisterUserOutput Success(Guid userId)
+    public static new RegisterUserOutput Success(string username)
     {
         var output = new RegisterUserOutput();
-        output.SetSuccess(userId);
+        output.SetSuccess(username);
         return output;
     }
 

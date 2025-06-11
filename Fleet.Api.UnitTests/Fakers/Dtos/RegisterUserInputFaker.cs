@@ -9,7 +9,6 @@ public class RegisterUserInputFaker : Faker<RegisterUserInput>
     {
         RuleFor(x => x.Username, f => f.Internet.UserName());
         RuleFor(x => x.Password, f => f.Internet.Password(8, true, @"\w\d"));
-        RuleFor(x => x.Email, f => f.Internet.Email());
         RuleFor(x => x.Name, f => f.Person.FullName);
         RuleFor(x => x.Cnpj, f => f.Company.Cnpj());
         RuleFor(x => x.BirthDate, f => f.Date.Past(30)); // 30 years ago

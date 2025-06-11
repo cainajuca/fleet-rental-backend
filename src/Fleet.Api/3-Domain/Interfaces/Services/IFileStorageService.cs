@@ -1,6 +1,7 @@
 ﻿namespace Fleet.Api._3_Domain.Services;
 public interface IFileStorageService
 {
+    Task UploadAsync(string base64File, string fileName);
     Task UploadAsync(Stream fileStream, string fileName, string contentType);
     Task DeleteAsync(string fileName);
     Task<Stream> DownloadAsync(string fileName);

@@ -1,15 +1,15 @@
 ﻿namespace Fleet.Api._2_Application.UseCases.UserUseCases.Remove;
 
-public class RemoveUserOutput : BaseOutput<Guid>
+public class RemoveUserOutput : BaseOutput<string>
 {
-    public Guid? Id { get; private set; }
+    public string? Identificador { get; private set; }
 
     private RemoveUserOutput() { }
 
-    public static new RemoveUserOutput Success(Guid userId)
+    public static new RemoveUserOutput Success(string username)
     {
         var output = new RemoveUserOutput();
-        output.SetSuccess(userId);
+        output.SetSuccess(username);
         return output;
     }
 
