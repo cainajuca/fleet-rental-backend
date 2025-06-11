@@ -3,7 +3,7 @@ using Fleet.Api._2_Application.Services;
 using Fleet.Api._2_Application.UseCases;
 using Fleet.Api._2_Application.UseCases.UserUseCases.Register;
 using Fleet.Api._2_Application.UseCases.UserUseCases.Remove;
-using Fleet.Api._3_Domain.Repositories;
+using Fleet.Api._3_Domain.Interfaces.Repositories;
 using Fleet.Domain.Constants.Enums;
 using Fleet.Domain.Entities;
 using MediatR;

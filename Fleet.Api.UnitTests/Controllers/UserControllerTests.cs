@@ -3,7 +3,7 @@ using Fleet.Api._1_Presentation.ViewModels;
 using Fleet.Api._2_Application.Services;
 using Fleet.Api._2_Application.UseCases;
 using Fleet.Api._2_Application.UseCases.UserUseCases.Register;
-using Fleet.Api._3_Domain.Repositories;
+using Fleet.Api._3_Domain.Interfaces.Repositories;
 using Fleet.Api.UnitTests.Fakers.Dtos;
 using Fleet.Api.UnitTests.Fakers.Entities;
 using Fleet.Domain.Constants.Enums;
@@ -167,7 +167,7 @@ public class UserControllerTests
     {
         // Arrange
         var dto = new LoginDto { Username = "u", Password = "not used" };
-        
+
         var user = new AppUserFaker().UseSeed(234).Generate();
 
         _hasher

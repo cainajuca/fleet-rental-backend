@@ -1,6 +1,6 @@
 ﻿using Fleet.Api._2_Application.Services;
-using Fleet.Api._3_Domain.Repositories;
-using Fleet.Api._3_Domain.Services;
+using Fleet.Api._3_Domain.Interfaces.Repositories;
+using Fleet.Api._3_Domain.Interfaces.Services;
 using Fleet.Api._4_Infra.Database;
 using Fleet.Api._4_Infra.Database.Repositories;
 using Fleet.Api._4_Infra.FileStorage;

@@ -1,4 +1,4 @@
-﻿using Fleet.Api._3_Domain.Repositories;
+﻿using Fleet.Api._3_Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Fleet.Api._2_Application.UseCases.UserUseCases.Remove;

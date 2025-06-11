@@ -1,6 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
-using Fleet.Api._3_Domain.Services;
+using Fleet.Api._3_Domain.Interfaces.Services;
 using System.Text.RegularExpressions;
 
 namespace Fleet.Api._4_Infra.FileStorage;

@@ -1,5 +1,5 @@
-﻿using Fleet.Api._3_Domain.Repositories;
-using Fleet.Api._3_Domain.Services;
+﻿using Fleet.Api._3_Domain.Interfaces.Repositories;
+using Fleet.Api._3_Domain.Interfaces.Services;
 using Fleet.Domain.Constants.Enums;
 using Fleet.Domain.Entities;
 using MediatR;
@@ -56,9 +56,9 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
         {
             AppUserId = user.Id,
 
-            
+
             Cnpj = input.Cnpj,
-            
+
             CnhNumber = input.CnhNumber,
             CnhType = input.CnhType,
         };

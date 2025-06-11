@@ -1,6 +1,6 @@
 ﻿using Fleet.Domain.Entities;
 
-namespace Fleet.Api._3_Domain.Repositories;
+namespace Fleet.Api._3_Domain.Interfaces.Repositories;
 
 /// <summary>
 /// Interface for user repository operations.

@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace Fleet.Api._3_Domain.Repositories;
+namespace Fleet.Api._3_Domain.Interfaces.Repositories;
 
 /// <summary>
 /// Generic interface for basic CRUD operations.
