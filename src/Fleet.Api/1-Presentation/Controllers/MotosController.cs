@@ -1,3 +1,4 @@
+﻿using Fleet.Api._2_Application.UseCases.VehicleUseCases.Edit;
 using Fleet.Api._2_Application.UseCases.VehicleUseCases.Register;
 using Fleet.Api._2_Application.UseCases.VehicleUseCases.Remove;
 using Fleet.Api._3_Domain.Entities;
@@ -77,6 +78,19 @@ public class MotosController : ControllerBase
         return StatusCode(StatusCodes.Status201Created);
     }
 
+    [HttpPut("{id}/placa")]
+    public async Task<IActionResult> Edit(string id, [FromBody] EditVehicleInput input)
+    {
+        input.Identifier = id;
+
+        var result = await _mediator.Send(input);
+
+        if (!result.IsSuccess)
+            return BadRequest("Dados inválidos");
+
+        return Ok("Placa modificada com sucesso");
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
@@ -85,7 +99,7 @@ public class MotosController : ControllerBase
         var result = await _mediator.Send(input);
 
         if (!result.IsSuccess)
-            return BadRequest(result);
+            return BadRequest("Dados inválidos");
 
         return Ok();
     }
