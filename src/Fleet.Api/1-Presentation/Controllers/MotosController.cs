@@ -1,5 +1,6 @@
 ﻿using Fleet.Api._2_Application.UseCases;
 using Fleet.Api._2_Application.UseCases.VehicleUseCases.Register;
+using Fleet.Api._2_Application.UseCases.VehicleUseCases.Remove;
 using Fleet.Api._3_Domain.Entities;
 using Fleet.Api._3_Domain.Interfaces.Repositories;
 using MediatR;
@@ -77,5 +78,18 @@ public class MotosController : ControllerBase
             return BadRequest("Dados inválidos");
 
         return StatusCode(StatusCodes.Status201Created);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(string id)
+    {
+        RemoveVehicleInput input = new(id);
+
+        var result = await _mediator.Send(input);
+
+        if (!result.IsSuccess)
+            return BadRequest(result);
+
+        return Ok();
     }
 }
