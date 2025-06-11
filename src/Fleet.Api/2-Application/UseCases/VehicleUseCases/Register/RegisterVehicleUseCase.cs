@@ -26,6 +26,13 @@ public class RegisterVehicleUseCase : IRequestHandler<RegisterVehicleInput, Regi
             LicensePlate = input.LicensePlate,
         };
 
+        var plateAlreadyExists = await _vehicleRepository.AnyAsync(x =>
+            x.LicensePlate == vehicle.LicensePlate
+            || x.Identifier == vehicle.Identifier);
+
+        if (plateAlreadyExists)
+            return new RegisterVehicleOutput(false);
+
         // TODO: add domain validation for Vehicle
         await _vehicleRepository.AddAsync(vehicle);
 
