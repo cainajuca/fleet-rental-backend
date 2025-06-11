@@ -1,20 +1,11 @@
 ﻿namespace Fleet.Api._2_Application.UseCases.UserUseCases.Register;
 
-public class RegisterUserOutput : BaseOutput<string>
+public class RegisterUserOutput
 {
-    private RegisterUserOutput() { }
-
-    public static new RegisterUserOutput Success(string username)
+    public RegisterUserOutput(bool isSuccess)
     {
-        var output = new RegisterUserOutput();
-        output.SetSuccess(username);
-        return output;
+        IsSuccess = isSuccess;
     }
 
-    public static new RegisterUserOutput Failure(params string[] errors)
-    {
-        var output = new RegisterUserOutput();
-        output.SetFailure(errors);
-        return output;
-    }
+    public bool IsSuccess { get; set; }
 }

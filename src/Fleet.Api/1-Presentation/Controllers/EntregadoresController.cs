@@ -1,6 +1,5 @@
 ﻿using Fleet.Api._1_Presentation.ViewModels;
 using Fleet.Api._2_Application.Services;
-using Fleet.Api._2_Application.UseCases;
 using Fleet.Api._2_Application.UseCases.UserUseCases.Register;
 using Fleet.Api._2_Application.UseCases.UserUseCases.Remove;
 using Fleet.Api._3_Domain.Interfaces.Repositories;
@@ -56,9 +55,7 @@ public class EntregadoresController : ControllerBase
 
         var users = await _userRepo.GetAllAsync(predicate, selector);
 
-        var output = BaseOutput<IEnumerable<DeliverymanVM>>.Success(users);
-
-        return Ok(output);
+        return Ok(users);
     }
 
     [HttpGet("{identificador}")]
@@ -67,16 +64,16 @@ public class EntregadoresController : ControllerBase
         var user = await _userRepo.GetUserByUsernameAsync(identificador);
 
         if (user == null)
-            return NotFound(BaseOutput<string>.Failure("User not found."));
+            return NotFound("Entregador não encontrado");
 
-        var output = BaseOutput<DeliverymanVM>.Success(new DeliverymanVM
+        var output = new DeliverymanVM
         {
             Identificador = user.Username,
             Nome = user.Name,
             Cnpj = user.Deliveryman != null ? user.Deliveryman!.Cnpj : null,
             DataNascimento = user.BirthDate,
             Papel = user.Role!.Value.ToString(),
-        });
+        };
 
         return Ok(output);
     }
@@ -100,14 +97,14 @@ public class EntregadoresController : ControllerBase
         var user = await _userRepo.GetByUsernameAsync(dto.Username);
 
         if (user == null)
-            return Unauthorized(BaseOutput<string>.Failure("User not found"));
+            return Unauthorized("Entregador não encontrado");
 
         var result = _hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
         if (result == PasswordVerificationResult.Failed)
-            return Unauthorized(BaseOutput<string>.Failure("Incorrect password"));
+            return Unauthorized("Usuário ou Senha incorreto");
 
         var token = _authService.CreateToken(user);
-        var output = BaseOutput<LoginResponseDto>.Success(new LoginResponseDto { Token = token });
+        var output = new LoginResponseDto { Token = token };
 
         return Ok(output);
     }

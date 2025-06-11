@@ -1,22 +1,11 @@
-﻿using Fleet.Api._2_Application.UseCases.UserUseCases.Remove;
+﻿namespace Fleet.Api._2_Application.UseCases.VehicleUseCases.Remove;
 
-namespace Fleet.Api._2_Application.UseCases.VehicleUseCases.Remove;
-
-public class RemoveVehicleOutput : BaseOutput<string>
+public class RemoveVehicleOutput
 {
-    private RemoveVehicleOutput() { }
-
-    public static new RemoveVehicleOutput Success(string identifier)
+    public RemoveVehicleOutput(bool isSuccess)
     {
-        var output = new RemoveVehicleOutput();
-        output.SetSuccess(identifier);
-        return output;
+        IsSuccess = isSuccess;
     }
 
-    public static new RemoveVehicleOutput Failure(params string[] errors)
-    {
-        var output = new RemoveVehicleOutput();
-        output.SetFailure(errors);
-        return output;
-    }
+    public bool IsSuccess { get; set; }
 }

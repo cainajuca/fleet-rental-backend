@@ -1,4 +1,3 @@
-﻿using Fleet.Api._2_Application.UseCases;
 using Fleet.Api._2_Application.UseCases.VehicleUseCases.Register;
 using Fleet.Api._2_Application.UseCases.VehicleUseCases.Remove;
 using Fleet.Api._3_Domain.Entities;
@@ -45,9 +44,7 @@ public class MotosController : ControllerBase
 
         var vehicles = await _vehicleRepo.GetAllAsync(predicate, selector);
 
-        var output = BaseOutput<IEnumerable<object>>.Success(vehicles);
-
-        return Ok(output);
+        return Ok(vehicles);
     }
 
     [HttpGet("{identificador}")]
@@ -56,15 +53,15 @@ public class MotosController : ControllerBase
         var vehicle = await _vehicleRepo.GetByIdentifierAsync(identificador);
 
         if (vehicle == null)
-            return NotFound(BaseOutput<string>.Failure("Moto não encontrada"));
+            return NotFound("Moto não encontrada");
 
-        var output = BaseOutput<object>.Success(new
+        var output = new
         {
             Identificador = vehicle.Identifier,
             Ano = vehicle.Year,
             Modelo = vehicle.Model,
             Placa = vehicle.LicensePlate,
-        });
+        };
 
         return Ok(output);
     }

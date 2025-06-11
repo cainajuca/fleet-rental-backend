@@ -1,20 +1,11 @@
 ﻿namespace Fleet.Api._2_Application.UseCases.UserUseCases.Remove;
 
-public class RemoveUserOutput : BaseOutput<string>
+public class RemoveUserOutput
 {
-    private RemoveUserOutput() { }
-
-    public static new RemoveUserOutput Success(string username)
+    public RemoveUserOutput(bool isSuccess)
     {
-        var output = new RemoveUserOutput();
-        output.SetSuccess(username);
-        return output;
+        IsSuccess = isSuccess;
     }
 
-    public static new RemoveUserOutput Failure(params string[] errors)
-    {
-        var output = new RemoveUserOutput();
-        output.SetFailure(errors);
-        return output;
-    }
+    public bool IsSuccess { get; set; }
 }

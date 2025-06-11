@@ -56,9 +56,8 @@ public class UserControllerTests
         Assert.NotNull(ok);
         Assert.Equal(StatusCodes.Status200OK, ok.StatusCode);
 
-        var output = ok.Value as BaseOutput<DeliverymanVM>;
+        var output = ok.Value as DeliverymanVM;
         Assert.NotNull(output);
-        Assert.True(output.IsSuccess);
     }
 
     [Fact]
@@ -86,7 +85,7 @@ public class UserControllerTests
 
         input.CnhImage = "base64-text";
 
-        var output = RegisterUserOutput.Success("test123");
+        var output = new RegisterUserOutput(true);
 
         _mediator
             .Setup(m => m.Send(input, It.IsAny<CancellationToken>()))
@@ -106,7 +105,7 @@ public class UserControllerTests
     {
         // Arrange
         var input = new RegisterUserInputFaker().UseSeed(234).Generate();
-        var output = RegisterUserOutput.Failure("erro");
+        var output = new RegisterUserOutput(false);
 
         _mediator
             .Setup(m => m.Send(It.IsAny<RegisterUserInput>(), It.IsAny<CancellationToken>()))
@@ -190,8 +189,7 @@ public class UserControllerTests
         Assert.NotNull(ok);
         Assert.Equal(StatusCodes.Status200OK, ok.StatusCode);
 
-        var output = Assert.IsType<BaseOutput<LoginResponseDto>>(ok.Value);
-        Assert.True(output.IsSuccess);
-        Assert.Equal("jwt-token", output.Data!.Token);
+        var output = Assert.IsType<LoginResponseDto>(ok.Value);
+        Assert.Equal("jwt-token", output.Token);
     }
 }

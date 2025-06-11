@@ -33,11 +33,11 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
     {
         var imageSuccessfullyStored = await UploadCnhIntoFileStorage(input);
         if (!imageSuccessfullyStored)
-            return RegisterUserOutput.Failure("Dados inválidos");
+            return new RegisterUserOutput(false);
 
         var exists = await _userRepo.ExistsByUsernameAsync(input.Username);
         if (exists)
-            return RegisterUserOutput.Failure("Dados inválidos");
+            return new RegisterUserOutput(false);
 
         var user = new AppUser
         {
@@ -52,7 +52,7 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
 
         var cnhTypeIsValid = ValidateCnhType(input.CnhType, out CnhType cnh);
         if (!cnhTypeIsValid)
-            return RegisterUserOutput.Failure("Dados inválidos");
+            return new RegisterUserOutput(false);
 
         await _userRepo.AddAsync(user);
 
@@ -73,7 +73,7 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
 
         await _userRepo.SaveChangesAsync();
 
-        return RegisterUserOutput.Success(user.Username);
+        return new RegisterUserOutput(true);
     }
 
     private async Task<bool> UploadCnhIntoFileStorage(RegisterUserInput input)

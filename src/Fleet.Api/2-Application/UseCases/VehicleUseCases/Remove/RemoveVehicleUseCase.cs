@@ -21,12 +21,12 @@ public class RemoveVehicleUseCase : IRequestHandler<RemoveVehicleInput, RemoveVe
     {
         var vehicle = await _vehicleRepo.GetByIdentifierAsync(input.Identifier);
         if (vehicle == null)
-            return RemoveVehicleOutput.Failure("Dados inválidos");
+            return new RemoveVehicleOutput(false);
 
         _vehicleRepo.Remove(vehicle);
 
         await _vehicleRepo.SaveChangesAsync();
 
-        return RemoveVehicleOutput.Success(vehicle.Identifier);
+        return new RemoveVehicleOutput(true);
     }
 }

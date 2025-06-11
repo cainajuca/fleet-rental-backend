@@ -20,12 +20,12 @@ public class RemoveUserUseCase : IRequestHandler<RemoveUserInput, RemoveUserOutp
     {
         var user = await _userRepo.GetByUsernameAsync(input.Username);
         if (user == null)
-            return RemoveUserOutput.Failure("User does not exist");
+            return new RemoveUserOutput(false);
 
         _userRepo.Remove(user);
 
         await _userRepo.SaveChangesAsync();
 
-        return RemoveUserOutput.Success(user.Username);
+        return new RemoveUserOutput(true);
     }
 }

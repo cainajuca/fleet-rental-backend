@@ -31,6 +31,6 @@ public class RegisterVehicleUseCase : IRequestHandler<RegisterVehicleInput, Regi
 
         await _vehicleRepository.SaveChangesAsync();
 
-        return RegisterVehicleOutput.Success(vehicle.Identifier);
+        return new RegisterVehicleOutput(true);
     }
 }
