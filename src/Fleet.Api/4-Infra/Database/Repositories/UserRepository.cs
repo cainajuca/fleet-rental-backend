@@ -2,6 +2,7 @@
 using Fleet.Domain.Entities;
 using Fleet.Infra.Database;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Fleet.Api._4_Infra.Database.Repositories;
 public class UserRepository : Repository<AppUser>, IUserRepository
@@ -18,4 +19,10 @@ public class UserRepository : Repository<AppUser>, IUserRepository
 
     public async Task<bool> ExistsByUsernameAsync(string username) =>
         await _dbSet.AnyAsync(u => u.Username == username);
+
+    public async Task<TResult?> GetByUsernameAsync<TResult>(string username, Expression<Func<AppUser, TResult>> selector) =>
+        await _dbSet
+            .Where(x => x.Username == username)
+            .Select(selector)
+            .FirstOrDefaultAsync();
 }

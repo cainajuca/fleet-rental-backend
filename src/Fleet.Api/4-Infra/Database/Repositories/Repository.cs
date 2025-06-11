@@ -1,4 +1,5 @@
 ﻿using Fleet.Api._3_Domain.Interfaces.Repositories;
+using Fleet.Domain.Entities;
 using Fleet.Infra.Database;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -8,7 +9,7 @@ namespace Fleet.Api._4_Infra.Database.Repositories;
 /// <summary>
 /// Generic implementation of IRepository using EF Core.
 /// </summary>
-public class Repository<T> : IRepository<T> where T : class
+public class Repository<T> : IRepository<T> where T : BaseEntity
 {
     protected readonly AppDbContext _context;
     protected readonly DbSet<T> _dbSet;
@@ -30,6 +31,12 @@ public class Repository<T> : IRepository<T> where T : class
 
     public async Task<T?> GetByIdAsync(Guid id)
         => await _dbSet.FindAsync(id);
+
+    public async Task<TResult?> GetByIdAsync<TResult>(Guid id, Expression<Func<T, TResult>> selector) =>
+        await _dbSet
+            .Where(x => x.Id == id)
+            .Select(selector)
+            .FirstOrDefaultAsync();
 
     public async Task AddAsync(T entity)
         => await _dbSet.AddAsync(entity);
