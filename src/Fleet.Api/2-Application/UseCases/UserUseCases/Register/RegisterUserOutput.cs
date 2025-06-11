@@ -2,8 +2,6 @@
 
 public class RegisterUserOutput : BaseOutput<string>
 {
-    public string? Identificador { get; private set; }
-
     private RegisterUserOutput() { }
 
     public static new RegisterUserOutput Success(string username)

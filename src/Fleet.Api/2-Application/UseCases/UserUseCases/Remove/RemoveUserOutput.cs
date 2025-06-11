@@ -2,8 +2,6 @@
 
 public class RemoveUserOutput : BaseOutput<string>
 {
-    public string? Identificador { get; private set; }
-
     private RemoveUserOutput() { }
 
     public static new RemoveUserOutput Success(string username)

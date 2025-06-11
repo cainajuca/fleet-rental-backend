@@ -32,11 +32,11 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
     {
         var imageSuccessfullyStored = await UploadCnhIntoFileStorage(input);
         if (!imageSuccessfullyStored)
-            return RegisterUserOutput.Failure("Failed to upload CNH image for user {Username}", input.Username);
+            return RegisterUserOutput.Failure("Dados inválidos");
 
         var exists = await _userRepo.ExistsByUsernameAsync(input.Username);
         if (exists)
-            return RegisterUserOutput.Failure("User already exists");
+            return RegisterUserOutput.Failure("Dados inválidos");
 
         var user = new AppUser
         {

@@ -88,7 +88,7 @@ public class EntregadoresController : ControllerBase
         var result = await _mediator.Send(input);
 
         if (!result.IsSuccess)
-            return BadRequest(result);
+            return BadRequest("Dados inválidos");
 
         return StatusCode(StatusCodes.Status201Created);
     }
