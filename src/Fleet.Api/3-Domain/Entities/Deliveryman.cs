@@ -12,4 +12,11 @@ public class Deliveryman : BaseEntity
     public CnhType CnhType { get; set; }
 
     public ICollection<Rental> Rentals { get; set; } = [];
+
+    public void EnsureCanRent()
+    {
+        if (CnhType == CnhType.B)
+            throw new InvalidOperationException(
+                $"Deliveryman with CNH type '{CnhType}' is not allowed to rent this vehicle.");
+    }
 }
