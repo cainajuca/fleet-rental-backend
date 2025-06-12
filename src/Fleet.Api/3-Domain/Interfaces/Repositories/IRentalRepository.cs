@@ -7,5 +7,4 @@ namespace Fleet.Api._3_Domain.Interfaces.Repositories;
 /// </summary>
 public interface IRentalRepository : IRepository<Rental>
 {
-    Task<Rental?> GetRentalByIdWithIncludes(Guid id);
 }
