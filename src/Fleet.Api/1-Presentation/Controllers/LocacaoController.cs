@@ -1,4 +1,5 @@
 ﻿using Fleet.Api._1_Presentation.ViewModels;
+using Fleet.Api._2_Application.UseCases.RentalUseCases.InformReturnDate;
 using Fleet.Api._2_Application.UseCases.RentalUseCases.Register;
 using Fleet.Api._3_Domain.Entities;
 using Fleet.Api._3_Domain.Interfaces.Repositories;
@@ -79,5 +80,18 @@ public class LocacaoController : ControllerBase
             return BadRequest("Dados inválidos");
 
         return StatusCode(StatusCodes.Status201Created);
+    }
+
+    [HttpPut("{id}/devolucao")]
+    public async Task<IActionResult> InformReturnDate(Guid id, [FromBody] InformReturnDateInput input)
+    {
+        input.Id = id;
+
+        var result = await _mediator.Send(input);
+
+        if (!result.IsSuccess)
+            return BadRequest("Dados inválidos");
+
+        return Ok("Data de devolução informada com sucesso");
     }
 }
