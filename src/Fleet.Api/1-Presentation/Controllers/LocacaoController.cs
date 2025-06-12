@@ -31,16 +31,13 @@ public class LocacaoController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        Expression<Func<Rental, RentalVM>> selector = u => new RentalVM
+        Expression<Func<Rental, RentaListlVM>> selector = u => new RentaListlVM
         {
             Id = u.Id,
-            DailyRate = u.DailyRate / 100.0, // convert cents to currency units
             DeliverymanIdentifier = u.Deliveryman!.AppUser.Username,
             VehicleIdentifier = u.Vehicle!.Identifier,
             StartDate = u.StartDate,
             EndDate = u.EndDate,
-            ExpectedEndDate = u.ExpectedEndDate,
-            ReturnedAt = u.ReturnedAt
         };
 
         var users = await _rentalRepo.GetAllAsync(x => true, selector);
@@ -60,7 +57,10 @@ public class LocacaoController : ControllerBase
             StartDate = u.StartDate,
             EndDate = u.EndDate,
             ExpectedEndDate = u.ExpectedEndDate,
-            ReturnedAt = u.ReturnedAt
+            ReturnedAt = u.ReturnedAt,
+
+            TotalCost = u.TotalCost / 100.0,
+            Penalty = u.Penalty / 100.0,
         };
 
         var user = await _rentalRepo.GetByIdAsync(id, selector);
