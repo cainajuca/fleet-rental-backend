@@ -2,6 +2,7 @@
 using Fleet.Api._2_Application.Services;
 using Fleet.Api._2_Application.UseCases.UserUseCases.Register;
 using Fleet.Api._2_Application.UseCases.UserUseCases.Remove;
+using Fleet.Api._2_Application.UseCases.UserUseCases.UpdateCnhImage;
 using Fleet.Api._3_Domain.Interfaces.Repositories;
 using Fleet.Domain.Constants.Enums;
 using Fleet.Domain.Entities;
@@ -83,6 +84,20 @@ public class EntregadoresController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterUserInput input)
     {
+        var result = await _mediator.Send(input);
+
+        if (!result.IsSuccess)
+            return BadRequest("Dados inválidos");
+
+        return StatusCode(StatusCodes.Status201Created);
+    }
+
+    [HttpPost("{id}/cnh")]
+    [AllowAnonymous]
+    public async Task<IActionResult> UpdateCnhImage(string id, [FromBody] UpdateCnhImageInput input)
+    {
+        input.DeliverymanUsername = id;
+
         var result = await _mediator.Send(input);
 
         if (!result.IsSuccess)
