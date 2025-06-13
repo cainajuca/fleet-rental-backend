@@ -4,11 +4,13 @@ using Fleet.Api._3_Domain.Interfaces.Services;
 using Fleet.Api._4_Infra.Database;
 using Fleet.Api._4_Infra.Database.Repositories;
 using Fleet.Api._4_Infra.FileStorage;
+using Fleet.Api._4_Infra.Messaging;
 using Fleet.Domain.Entities;
 using Fleet.Infra.Database;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
@@ -49,6 +51,17 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFileStorageService, MinioFileStorageService>();
 
 builder.Services.AddScoped<IPasswordHasher<AppUser>, PasswordHasher<AppUser>>();
+
+builder.Services
+  .Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMq"));
+
+builder.Services.AddSingleton<IMessagePublisher>(sp =>
+{
+    var opts = sp.GetRequiredService<IOptions<RabbitMqSettings>>().Value;
+    var logger = sp.GetRequiredService<ILogger<RabbitMqPublisher>>();
+
+    return new RabbitMqPublisher(logger, opts.Uri, opts.ExchangeName);
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options
