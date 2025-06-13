@@ -7,6 +7,9 @@ namespace Fleet.Api._4_Infra.FileStorage;
 
 public class MinioFileStorageService : IFileStorageService
 {
+    private static readonly byte[] _pngSignature = [137, 80, 78, 71, 13, 10, 26, 10];
+    private static readonly byte[] _bmpSignature = "BM"u8.ToArray();
+
     private readonly IAmazonS3 _s3Client;
     private readonly string _bucketName;
     private readonly ILogger<MinioFileStorageService> _logger;
@@ -41,36 +44,46 @@ public class MinioFileStorageService : IFileStorageService
     {
         _logger.LogInformation("Uploading file: {FileName}", fileName);
 
-        var imageBytes = Convert.FromBase64String(Regex.Replace(base64File, @"^data:[\w\/\-\+\.]+;base64,", ""));
-        using var stream = new MemoryStream(imageBytes);
+        var (bytes, contentType) = ParseAndValidateImage(base64File);
 
-        var mimeTypeMatch = Regex.Match(base64File, @"^data:(?<mime>[\w\/\-\+\.]+);base64,", RegexOptions.IgnoreCase);
-        var contentType = mimeTypeMatch.Success ? mimeTypeMatch.Groups["mime"].Value : "application/octet-stream";
-
+        using var stream = new MemoryStream(bytes);
         var putRequest = new PutObjectRequest
         {
             BucketName = _bucketName,
             Key = fileName,
             InputStream = stream,
-            ContentType = contentType
+            ContentType = contentType,
+            AutoCloseStream = true
         };
-
         await _s3Client.PutObjectAsync(putRequest);
+
+        _logger.LogInformation("File {FileName} uploaded as {ContentType}", fileName, contentType);
     }
 
-    public async Task UploadAsync(Stream fileStream, string fileName, string contentType)
+    private static (byte[] Data, string ContentType) ParseAndValidateImage(string base64File)
     {
-        _logger.LogInformation("Uploading file: {FileName}", fileName);
+        // remove header data:...;base64, se houver
+        var payload = base64File.Contains(',')
+            ? base64File.Split(',', 2)[1]
+            : base64File;
 
-        var putRequest = new PutObjectRequest
+        byte[] data;
+        try
         {
-            BucketName = _bucketName,
-            Key = fileName,
-            InputStream = fileStream,
-            ContentType = contentType
-        };
+            data = Convert.FromBase64String(payload);
+        }
+        catch (FormatException)
+        {
+            throw new InvalidDataException("Invalid base64 string.");
+        }
 
-        await _s3Client.PutObjectAsync(putRequest);
+        // detecta assinatura
+        if (data.Take(_pngSignature.Length).SequenceEqual(_pngSignature))
+            return (data, "image/png");
+        if (data.Take(_bmpSignature.Length).SequenceEqual(_bmpSignature))
+            return (data, "image/bmp");
+
+        throw new InvalidDataException("Only PNG or BMP images are allowed.");
     }
 
     public async Task<Stream> DownloadAsync(string fileName)

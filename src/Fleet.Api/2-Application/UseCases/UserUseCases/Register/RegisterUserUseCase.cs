@@ -31,10 +31,6 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
     }
     public async Task<RegisterUserOutput> Handle(RegisterUserInput input, CancellationToken ct)
     {
-        var imageSuccessfullyStored = await UploadCnhIntoFileStorage(input);
-        if (!imageSuccessfullyStored)
-            return new RegisterUserOutput(false);
-
         var exists = await _userRepo.ExistsByUsernameAsync(input.Username);
         if (exists)
             return new RegisterUserOutput(false);
@@ -72,6 +68,10 @@ public class RegisterUserUseCase : IRequestHandler<RegisterUserInput, RegisterUs
         await _deliverymanRepo.AddAsync(deliveryman);
 
         await _userRepo.SaveChangesAsync();
+
+        var imageSuccessfullyStored = await UploadCnhIntoFileStorage(input);
+        if (!imageSuccessfullyStored)
+            _logger.LogError("Failed to upload CNH image for user {Username}", input.Username);
 
         return new RegisterUserOutput(true);
     }
