@@ -2,6 +2,15 @@
 
 This project is a backend solution for managing motorcycle rentals and delivery drivers. It demonstrates a microservices architecture using .NET, PostgreSQL, RabbitMQ, and MinIO for object storage.
 
+## Table of Contents
+
+- [Features](#features)
+- [Technologies](#technologies)
+- [How to Run](#how-to-run)
+- [Documentation](#documentation)
+  - [ER Diagram](#er-diagram)
+  - [System Design](#system-design)
+
 ## Features
 
 - Motorcycle and driver management
@@ -22,3 +31,12 @@ This project is a backend solution for managing motorcycle rentals and delivery 
 
 ```bash
 docker-compose up --build
+```
+
+## Documentation
+
+### ER Diagram
+![ER Diagram](docs/er-diagram.png)
+
+### System Design
+![System Design](docs/architecture.png)
