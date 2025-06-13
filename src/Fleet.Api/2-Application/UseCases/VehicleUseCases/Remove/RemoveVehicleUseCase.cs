@@ -23,6 +23,12 @@ public class RemoveVehicleUseCase : IRequestHandler<RemoveVehicleInput, RemoveVe
         if (vehicle == null)
             return new RemoveVehicleOutput(false);
 
+        if (vehicle.Rentals.Count != 0)
+        {
+            _logger.LogWarning("Vehicle with identifier {Identifier} cannot be removed because it has active rentals.", input.Identifier);
+            return new RemoveVehicleOutput(false);
+        }
+
         _vehicleRepo.Remove(vehicle);
 
         await _vehicleRepo.SaveChangesAsync();

@@ -11,5 +11,6 @@ public class VehicleRepository : Repository<Vehicle>, IVehicleRepository
 
     public async Task<Vehicle?> GetByIdentifierAsync(string identifier) =>
         await _dbSet
+            .Include(x => x.Rentals)
             .SingleOrDefaultAsync(x => x.Identifier == identifier);
 }
