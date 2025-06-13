@@ -70,7 +70,8 @@ public class EntregadoresController : ControllerBase
         {
             Identificador = user.Username,
             Nome = user.Name,
-            Cnpj = user.Deliveryman != null ? user.Deliveryman!.Cnpj : null,
+            Cnpj =      user.Deliveryman != null ? user.Deliveryman!.Cnpj : null,
+            CnhNumber = user.Deliveryman != null ? user.Deliveryman!.CnhNumber : null,
             DataNascimento = user.BirthDate,
             Papel = user.Role!.Value.ToString(),
         };
