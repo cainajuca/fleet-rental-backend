@@ -1,0 +1,72 @@
+﻿using Fleet.Api._2_Application.UseCases.NotificationMessageUseCases.Register;
+using Fleet.Api._3_Domain.Entities;
+using Fleet.Api._3_Domain.Interfaces.Repositories;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
+
+namespace Fleet.Api._1_Presentation.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class NotificationMessageController : ControllerBase
+{
+    private readonly ILogger<NotificationMessageController> _logger;
+    private readonly INotificationMessageRepository _messageRepo;
+    private readonly IMediator _mediator;
+
+    public NotificationMessageController(
+        ILogger<NotificationMessageController> logger, // TODO: use logger in methods
+        INotificationMessageRepository rentalRepo,
+        IMediator mediator)
+    {
+        _logger = logger;
+        _messageRepo = rentalRepo;
+        _mediator = mediator;
+    }
+
+    // TODO: implement authorization for these endpoints
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        Expression<Func<NotificationMessage, object>> selector = u => new
+        {
+            u.Id,
+            u.Message,
+            u.ReceivedAt
+        };
+
+        var users = await _messageRepo.GetAllAsync(x => true, selector);
+
+        return Ok(users);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        Expression<Func<NotificationMessage, object>> selector = u => new
+        {
+            u.Id,
+            u.Message,
+            u.ReceivedAt
+        };
+
+        var user = await _messageRepo.GetByIdAsync(id, selector);
+        if (user == null)
+            return NotFound("Mensagem não encontrada");
+
+        return Ok(user);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Register([FromBody] RegisterNotificationMessageInput input)
+    {
+        var result = await _mediator.Send(input);
+
+        if (!result.IsSuccess)
+            return BadRequest("Dados inválidos");
+
+        return StatusCode(StatusCodes.Status201Created);
+    }
+}

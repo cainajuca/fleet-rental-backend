@@ -1,8 +1,8 @@
 ﻿using Fleet.Domain.Entities;
 
 namespace Fleet.Api._3_Domain.Entities;
-public class NotificationMessage : BaseEntity
+public class NotificationMessage(string message) : BaseEntity
 {
-    public required string Message { get; set; }
-    public DateTime ReceivedAt { get; set; }
+    public string Message { get; set; } = message;
+    public DateTime ReceivedAt { get; set; } = DateTime.UtcNow;
 }

@@ -46,6 +46,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDeliverymanRepository, DeliverymanRepository>();
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 builder.Services.AddScoped<IRentalRepository, RentalRepository>();
+builder.Services.AddScoped<INotificationMessageRepository, NotificationMessageRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFileStorageService, MinioFileStorageService>();
