@@ -34,17 +34,26 @@ public class NotificationWorker : BackgroundService
 
         _channel = _connection.CreateModel();
 
+        // Assures that the exchange exists before consuming messages
+        _channel.ExchangeDeclare(
+            exchange: _exchangeName, // vehicles.exchange
+            type: ExchangeType.Topic,
+            durable: true,
+            autoDelete: false,
+            arguments: null
+        );
+
         // Assures that the queue exists before consuming messages
         _channel.QueueDeclare(
-            queue: _queueName,
+            queue: _queueName, // vehicles.2024.queue
             durable: true,
             exclusive: false,
             autoDelete: false,
             arguments: null);
 
         _channel.QueueBind(
-            queue: _queueName, // vehicles.2024.queue
-            exchange: _exchangeName, // vehicles.exchange
+            queue: _queueName,
+            exchange: _exchangeName,
             routingKey: "vehicle.created.2024");
 
         return base.StartAsync(cancellationToken);
