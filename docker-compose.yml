@@ -2,8 +2,8 @@ version: '3.8'
 services:
   api:
     build:
-      context: ./src/Fleet.Api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: src/Fleet.Api/Dockerfile
     ports:
       - "5000:8080"
     depends_on:
