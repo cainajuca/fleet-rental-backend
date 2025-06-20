@@ -1,6 +1,6 @@
 ﻿using Bogus;
 using Bogus.Extensions.Brazil;
-using Fleet.Api._2_Application.UseCases.UserUseCases.Register;
+using Fleet.Application.UseCases.UserUseCases.Register;
 
 namespace Fleet.Api.UnitTests.Fakers.Dtos;
 public class RegisterUserInputFaker : Faker<RegisterUserInput>

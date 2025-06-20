@@ -1,11 +1,10 @@
-﻿using Fleet.Api._1_Presentation.Controllers;
-using Fleet.Api._1_Presentation.ViewModels;
-using Fleet.Api._2_Application.Services;
-using Fleet.Api._2_Application.UseCases;
-using Fleet.Api._2_Application.UseCases.UserUseCases.Register;
-using Fleet.Api._3_Domain.Interfaces.Repositories;
+﻿using Fleet.Application.Services;
+using Fleet.Application.UseCases.UserUseCases.Register;
+using Fleet.Domain.Interfaces.Repositories;
+using Fleet.Api.Controllers;
 using Fleet.Api.UnitTests.Fakers.Dtos;
 using Fleet.Api.UnitTests.Fakers.Entities;
+using Fleet.Api.ViewModels;
 using Fleet.Domain.Constants.Enums;
 using Fleet.Domain.Entities;
 using MediatR;

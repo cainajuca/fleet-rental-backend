@@ -1,6 +1,6 @@
 ﻿using Bogus;
 using Bogus.Extensions.Brazil;
-using Fleet.Api._3_Domain.Constants.Enums;
+using Fleet.Domain.Constants.Enums;
 using Fleet.Domain.Entities;
 
 namespace Fleet.Api.UnitTests.Fakers.Entities;

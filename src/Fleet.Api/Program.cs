@@ -1,12 +1,12 @@
-﻿using Fleet.Api._2_Application.Services;
-using Fleet.Api._3_Domain.Interfaces.Repositories;
-using Fleet.Api._3_Domain.Interfaces.Services;
-using Fleet.Api._4_Infra.Database;
-using Fleet.Api._4_Infra.Database.Repositories;
-using Fleet.Api._4_Infra.FileStorage;
-using Fleet.Api._4_Infra.Messaging;
+﻿using Fleet.Application;
+using Fleet.Application.Services;
 using Fleet.Domain.Entities;
+using Fleet.Domain.Interfaces.Repositories;
+using Fleet.Domain.Interfaces.Services;
 using Fleet.Infra.Database;
+using Fleet.Infra.Database.Repositories;
+using Fleet.Infra.FileStorage;
+using Fleet.Infra.Messaging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +20,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var authSettings = builder.Configuration.GetSection("AuthSettings").Get<AuthSettings>()!;
+builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("AuthSettings"));
 
 builder.Services
     .AddAuthentication(options =>
@@ -35,9 +38,9 @@ builder.Services
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+            ValidIssuer = authSettings.Issuer,
+            ValidAudience = authSettings.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authSettings.Key)),
         };
     });
 
@@ -70,7 +73,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         .UseSnakeCaseNamingConvention());
 
 builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+{
+    cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+    cfg.RegisterServicesFromAssembly(typeof(FleetApplicationAssembly).Assembly);
+
+});
 
 var app = builder.Build();
 
