@@ -17,4 +17,8 @@
     <ProjectReference Include="..\Fleet.Domain\Fleet.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UseCases\NotificationMessageUseCases\RegisterGrpc\" />
+  </ItemGroup>
+
 </Project>

@@ -6,8 +6,10 @@ using Fleet.Domain.Interfaces.Services;
 using Fleet.Infra.Database;
 using Fleet.Infra.Database.Repositories;
 using Fleet.Infra.FileStorage;
+using Fleet.Infra.Grpc.Service;
 using Fleet.Infra.Messaging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -56,8 +58,9 @@ builder.Services.AddScoped<IFileStorageService, MinioFileStorageService>();
 
 builder.Services.AddScoped<IPasswordHasher<AppUser>, PasswordHasher<AppUser>>();
 
-builder.Services
-  .Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMq"));
+builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMq"));
+
+builder.Services.AddGrpc();
 
 builder.Services.AddSingleton<IMessagePublisher>(sp =>
 {
@@ -98,5 +101,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.MapGrpcService<MessageService>();
 app.MapControllers();
 app.Run();

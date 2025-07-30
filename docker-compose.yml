@@ -22,9 +22,9 @@ services:
       - api
     environment:
       - API_BASE_URL=http://api
-      - RABBITMQ_HOST=rabbitmq
-      - MINIO_ENDPOINT=minio
+      - RABBITMQ_HOST=amqp://guest:guest@rabbitmq:5672
       - BUCKET_NAME=cnh-images
+      - QUEUE_NAME=vehicles.2024.queue
 
   db:
     image: postgres:15

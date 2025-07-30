@@ -13,7 +13,8 @@ public class NotificationWorker : BackgroundService
 
     private IConnection? _connection;
     private IModel? _channel;
-    private readonly HttpClient _httpClient;
+    private readonly NotificationService.NotificationServiceClient _grpcClient;
+
 
     public NotificationWorker(string rabbitMqUrl, string queueName, string apiBaseUrl, string exchangeName)
     {
@@ -79,7 +80,7 @@ public class NotificationWorker : BackgroundService
                     _channel!.BasicAck(ea.DeliveryTag, multiple: false);
                 else
                     Console.WriteLine($"[Worker] API retornou {(int)resp.StatusCode}");
-                    // optional: let the message remain unacknowledged for retry
+                // optional: let the message remain unacknowledged for retry
             }
             catch (Exception ex)
             {

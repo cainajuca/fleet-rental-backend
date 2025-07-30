@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
     <PackageReference Include="MediatR" Version="12.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1-Preview.1" />
@@ -28,8 +29,13 @@
     <ProjectReference Include="..\..\Fleet.Domain\Fleet.Domain.csproj" />
     <ProjectReference Include="..\..\Fleet.Infra.Database\Fleet.Infra.Database.csproj" />
     <ProjectReference Include="..\..\Fleet.Infra.FileStorage\Fleet.Infra.FileStorage.csproj" />
+    <ProjectReference Include="..\..\Fleet.Infra.Grpc.Contracts\Fleet.Infra.Grpc.Contracts.csproj" />
+    <ProjectReference Include="..\..\Fleet.Infra.Grpc.Service\Fleet.Infra.Grpc.Service.csproj" />
     <ProjectReference Include="..\..\Fleet.Infra.Messaging\Fleet.Infra.Messaging.csproj" />
-    <ProjectReference Include="..\Fleet.Worker\Fleet.Worker.csproj" />
   </ItemGroup>
-
+	
+  <ItemGroup>
+	<Protobuf Include="..\..\Fleet.Infra.Grpc.Contracts\Protos\MessageService.proto" GrpcServices="Server" />
+  </ItemGroup>
+	
 </Project>

@@ -1,0 +1,16 @@
+﻿syntax = "proto3";
+
+package fleet.notification;
+option csharp_namespace = "Fleet.Grpc";
+
+service NotificationService {
+  rpc Register (RegisterRequest) returns (RegisterReply);
+}
+
+message RegisterRequest {
+  string message = 1;
+}
+
+message RegisterReply {
+  bool isSuccess = 1;
+}
