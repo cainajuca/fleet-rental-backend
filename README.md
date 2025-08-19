@@ -11,6 +11,7 @@ This project is a backend solution for managing motorcycle rentals and delivery 
   - [ER Diagram](#er-diagram)
   - [System Design](#system-design)
   - [API Reference (Swagger)](#api-reference-swagger)
+- [Use Case Example](#use-case-example)
 
 ## Features
 
@@ -53,3 +54,51 @@ http://localhost:5000/swagger
 > Make sure the API is running before accessing.
 
 ![Swagger UI](docs/swagger-ui.png)
+
+## Use Case Example
+
+### Creating a new vehicle
+
+This example demonstrates how to create a new vehicle in the system and how the notification mechanism works ONLY for vehicles manufactured in 2024.
+
+1. Send a **POST** request to `/vehicle` to create a new vehicle:
+
+**Request**
+```json
+POST /vehicle
+Content-Type: application/json
+
+{
+  "identifier": "Motorcycle123",
+  "model": "CB 500",
+  "year": 2024,
+  "licensePlate": "ABC-1234"
+}
+```
+**Response**
+```json
+{
+  "isSuccess": true
+}
+```
+
+2. When a vehicle is created, the endpoint publishes a message to RabbitMQ.  
+3. The worker then consumes these messages and generates a `NotificationMessage` only for vehicles from the year 2024.
+
+4. You can then retrieve the generated notification by calling GET /notificationmessage:
+**Request**
+```http
+GET /notificationmessage
+```
+**Response**
+```json
+[
+  {
+  	"id": "52e39fdd-da6f-4e63-98c6-9f6446e46ce7",
+    "message": "{\"Id\":\"6cd35c7b-233a-45e9-8220-47fac31d6bea\",\"Identifier\":\"Motorcycle123\",\"Model\":\"CB 500\",\"Year\":2024,\"LicensePlate\":\"ABC-1234\"}",
+    "receivedAt": "2025-06-13T01:41:14.222974Z"
+  }
+]
+```
+
+> :warning: **Note**: Only vehicles from the year 2024 trigger this messaging mechanism. Vehicles from other years will be created normally but no notification message will be published.
