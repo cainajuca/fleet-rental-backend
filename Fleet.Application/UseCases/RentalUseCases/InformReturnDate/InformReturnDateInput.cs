@@ -8,6 +8,5 @@ public class InformReturnDateInput : IRequest<InformReturnDateOutput>
     [JsonIgnore]
     public Guid? Id { get; set; }
 
-    [JsonPropertyName("data_devolucao")]
     public DateTime ReturnedAt { get; set; } 
 }

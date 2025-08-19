@@ -1,4 +1,5 @@
-﻿using Fleet.Application.UseCases.VehicleUseCases.Edit;
+﻿using Fleet.Api.ViewModels;
+using Fleet.Application.UseCases.VehicleUseCases.Edit;
 using Fleet.Application.UseCases.VehicleUseCases.Register;
 using Fleet.Application.UseCases.VehicleUseCases.Remove;
 using Fleet.Domain.Entities;
@@ -11,14 +12,14 @@ namespace Fleet.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class MotosController : ControllerBase
+public class VehicleController : ControllerBase
 {
-    private readonly ILogger<MotosController> _logger;
+    private readonly ILogger<VehicleController> _logger;
     private readonly IVehicleRepository _vehicleRepo;
     private readonly IMediator _mediator;
 
-    public MotosController(
-        ILogger<MotosController> logger, // TODO: use logger in methods
+    public VehicleController(
+        ILogger<VehicleController> logger, // TODO: use logger in methods
         IVehicleRepository vehicleRepo,
         IMediator mediator)
     {
@@ -27,20 +28,18 @@ public class MotosController : ControllerBase
         _mediator = mediator;
     }
 
-    // TODO: implement authorization for these endpoints
-
     [HttpGet]
     public async Task<IActionResult> GetAllVehicle([FromQuery] string? placa)
     {
         Expression<Func<Vehicle, bool>> predicate = x =>
             string.IsNullOrEmpty(placa) || x.LicensePlate == placa;
 
-        Expression<Func<Vehicle, object>> selector = x => new
+        Expression<Func<Vehicle, VehicleVM>> selector = x => new VehicleVM
         {
-            Identificador = x.Identifier,
-            Ano = x.Year,
-            Modelo = x.Model,
-            Placa = x.LicensePlate,
+            Identifier = x.Identifier,
+            Year = x.Year,
+            Model = x.Model,
+            LicensePlate = x.LicensePlate,
         };
 
         var vehicles = await _vehicleRepo.GetAllAsync(predicate, selector);
@@ -48,20 +47,20 @@ public class MotosController : ControllerBase
         return Ok(vehicles);
     }
 
-    [HttpGet("{identificador}")]
-    public async Task<IActionResult> GetDeliverymanByUsername(string identificador)
+    [HttpGet("{identifier}")]
+    public async Task<IActionResult> GetDeliverymanByUsername(string identifier)
     {
-        var vehicle = await _vehicleRepo.GetByIdentifierAsync(identificador);
+        var vehicle = await _vehicleRepo.GetByIdentifierAsync(identifier);
 
         if (vehicle == null)
-            return NotFound("Moto não encontrada");
+            return NotFound("Vehicle not found");
 
-        var output = new
+        var output = new VehicleVM
         {
-            Identificador = vehicle.Identifier,
-            Ano = vehicle.Year,
-            Modelo = vehicle.Model,
-            Placa = vehicle.LicensePlate,
+            Identifier = vehicle.Identifier,
+            Year = vehicle.Year,
+            Model = vehicle.Model,
+            LicensePlate = vehicle.LicensePlate,
         };
 
         return Ok(output);
@@ -73,12 +72,12 @@ public class MotosController : ControllerBase
         var result = await _mediator.Send(input);
 
         if (!result.IsSuccess)
-            return BadRequest("Dados inválidos");
+            return BadRequest("Invalid data");
 
         return StatusCode(StatusCodes.Status201Created);
     }
 
-    [HttpPut("{id}/placa")]
+    [HttpPut("{id}/plate")]
     public async Task<IActionResult> Edit(string id, [FromBody] EditVehicleInput input)
     {
         input.Identifier = id;
@@ -86,9 +85,9 @@ public class MotosController : ControllerBase
         var result = await _mediator.Send(input);
 
         if (!result.IsSuccess)
-            return BadRequest("Dados inválidos");
+            return BadRequest("Invalid data");
 
-        return Ok("Placa modificada com sucesso");
+        return Ok("License plate updated successfully");
     }
 
     [HttpDelete("{id}")]
@@ -99,7 +98,7 @@ public class MotosController : ControllerBase
         var result = await _mediator.Send(input);
 
         if (!result.IsSuccess)
-            return BadRequest("Dados inválidos");
+            return BadRequest("Invalid data");
 
         return Ok();
     }

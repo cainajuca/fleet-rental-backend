@@ -25,8 +25,6 @@ public class NotificationMessageController : ControllerBase
         _mediator = mediator;
     }
 
-    // TODO: implement authorization for these endpoints
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -54,7 +52,7 @@ public class NotificationMessageController : ControllerBase
 
         var user = await _messageRepo.GetByIdAsync(id, selector);
         if (user == null)
-            return NotFound("Mensagem não encontrada");
+            return NotFound("Message was not found");
 
         return Ok(user);
     }
@@ -65,7 +63,7 @@ public class NotificationMessageController : ControllerBase
         var result = await _mediator.Send(input);
 
         if (!result.IsSuccess)
-            return BadRequest("Dados inválidos");
+            return BadRequest("Invalid data");
 
         return StatusCode(StatusCodes.Status201Created);
     }

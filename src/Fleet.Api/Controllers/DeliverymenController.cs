@@ -11,22 +11,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
-using System.Text.Json.Serialization;
 
 namespace Fleet.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class EntregadoresController : ControllerBase
+public class DeliverymenController : ControllerBase
 {
-    private readonly ILogger<EntregadoresController> _logger;
+    private readonly ILogger<DeliverymenController> _logger;
     private readonly IPasswordHasher<AppUser> _hasher;
     private readonly IUserRepository _userRepo;
     private readonly IMediator _mediator;
     private readonly IAuthService _authService;
 
-    public EntregadoresController(
-        ILogger<EntregadoresController> logger, // TODO: use logger in methods
+    public DeliverymenController(
+        ILogger<DeliverymenController> logger, // TODO: use logger in methods
         IPasswordHasher<AppUser> hasher,
         IUserRepository userRepo,
         IMediator mediator,
@@ -39,19 +38,17 @@ public class EntregadoresController : ControllerBase
         _authService = authService;
     }
 
-    // TODO: implement authorization for these endpoints
-
     [HttpGet]
     public async Task<IActionResult> GetAllDeliverymen()
     {
         Expression<Func<AppUser, bool>> predicate = u => u.Role == UserRole.Deliveryman;
         Expression<Func<AppUser, DeliverymanVM>> selector = u => new DeliverymanVM
         {
-            Identificador = u.Username,
-            Nome = u.Name,
+            Identifier = u.Username,
+            Name = u.Name,
             Cnpj = u.Deliveryman!.Cnpj,
-            DataNascimento = u.BirthDate,
-            Papel = u.Role!.Value.ToString(),
+            BirthDate = u.BirthDate,
+            Role = u.Role!.Value.ToString(),
         };
 
         var users = await _userRepo.GetAllAsync(predicate, selector);
@@ -65,16 +62,16 @@ public class EntregadoresController : ControllerBase
         var user = await _userRepo.GetUserByUsernameAsync(id);
 
         if (user == null)
-            return NotFound("Entregador não encontrado");
+            return NotFound("Deliveryman was not found");
 
         var output = new DeliverymanVM
         {
-            Identificador = user.Username,
-            Nome = user.Name,
+            Identifier = user.Username,
+            Name = user.Name,
             Cnpj = user.Deliveryman != null ? user.Deliveryman!.Cnpj : null,
             CnhNumber = user.Deliveryman != null ? user.Deliveryman!.CnhNumber : null,
-            DataNascimento = user.BirthDate,
-            Papel = user.Role!.Value.ToString(),
+            BirthDate = user.BirthDate,
+            Role = user.Role!.Value.ToString(),
         };
 
         return Ok(output);
@@ -87,7 +84,7 @@ public class EntregadoresController : ControllerBase
         var result = await _mediator.Send(input);
 
         if (!result.IsSuccess)
-            return BadRequest("Dados inválidos");
+            return BadRequest("Invalid data");
 
         return StatusCode(StatusCodes.Status201Created);
     }
@@ -101,7 +98,7 @@ public class EntregadoresController : ControllerBase
         var result = await _mediator.Send(input);
 
         if (!result.IsSuccess)
-            return BadRequest("Dados inválidos");
+            return BadRequest("Invalid data");
 
         return StatusCode(StatusCodes.Status201Created);
     }
@@ -113,11 +110,11 @@ public class EntregadoresController : ControllerBase
         var user = await _userRepo.GetByUsernameAsync(dto.Username);
 
         if (user == null)
-            return Unauthorized("Entregador não encontrado");
+            return Unauthorized("Deliveryman was not found");
 
         var result = _hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
         if (result == PasswordVerificationResult.Failed)
-            return Unauthorized("Usuário ou Senha incorreto");
+            return Unauthorized("Username or password is incorrect");
 
         var token = _authService.CreateToken(user);
         var output = new LoginResponseDto { Token = token };
@@ -141,10 +138,7 @@ public class EntregadoresController : ControllerBase
 
 public class LoginDto
 {
-    [JsonPropertyName("id")]
     public string Username { get; set; } = null!;
-
-    [JsonPropertyName("senha")]
     public string Password { get; set; } = null!;
 }
 

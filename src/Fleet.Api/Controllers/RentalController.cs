@@ -11,14 +11,14 @@ namespace Fleet.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class LocacaoController : ControllerBase
+public class RentalController : ControllerBase
 {
-    private readonly ILogger<LocacaoController> _logger;
+    private readonly ILogger<RentalController> _logger;
     private readonly IRentalRepository _rentalRepo;
     private readonly IMediator _mediator;
 
-    public LocacaoController(
-        ILogger<LocacaoController> logger, // TODO: use logger in methods
+    public RentalController(
+        ILogger<RentalController> logger, // TODO: use logger in methods
         IRentalRepository rentalRepo,
         IMediator mediator)
     {
@@ -27,12 +27,10 @@ public class LocacaoController : ControllerBase
         _mediator = mediator;
     }
 
-    // TODO: implement authorization for these endpoints
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        Expression<Func<Rental, RentaListlVM>> selector = u => new RentaListlVM
+        Expression<Func<Rental, RentalListlVM>> selector = u => new RentalListlVM
         {
             Id = u.Id,
             DeliverymanIdentifier = u.Deliveryman!.AppUser.Username,
@@ -66,7 +64,7 @@ public class LocacaoController : ControllerBase
 
         var user = await _rentalRepo.GetByIdAsync(id, selector);
         if (user == null)
-            return NotFound("Entregador não encontrado");
+            return NotFound("Deliveryman was not found");
 
         return Ok(user);
     }
@@ -77,12 +75,12 @@ public class LocacaoController : ControllerBase
         var result = await _mediator.Send(input);
 
         if (!result.IsSuccess)
-            return BadRequest("Dados inválidos");
+            return BadRequest("Invalid data");
 
         return StatusCode(StatusCodes.Status201Created);
     }
 
-    [HttpPut("{id}/devolucao")]
+    [HttpPut("{id}/return")]
     public async Task<IActionResult> InformReturnDate(Guid id, [FromBody] InformReturnDateInput input)
     {
         input.Id = id;
@@ -90,8 +88,8 @@ public class LocacaoController : ControllerBase
         var result = await _mediator.Send(input);
 
         if (!result.IsSuccess)
-            return BadRequest("Dados inválidos");
+            return BadRequest("Invalid data");
 
-        return Ok("Data de devolução informada com sucesso");
+        return Ok("Return date was successfully updated");
     }
 }

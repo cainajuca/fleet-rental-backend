@@ -17,16 +17,16 @@ using Moq;
 namespace Fleet.Api.UnitTests.Controllers;
 public class UserControllerTests
 {
-    private readonly Mock<ILogger<EntregadoresController>> _logger = new();
+    private readonly Mock<ILogger<DeliverymenController>> _logger = new();
     private readonly Mock<IUserRepository> _userRepo = new();
     private readonly Mock<IMediator> _mediator = new();
     private readonly Mock<IAuthService> _authSvc = new();
     private readonly Mock<IPasswordHasher<AppUser>> _hasher = new();
-    private readonly EntregadoresController _controller;
+    private readonly DeliverymenController _controller;
 
     public UserControllerTests()
     {
-        _controller = new EntregadoresController(
+        _controller = new DeliverymenController(
             _logger.Object,
             _hasher.Object,
             _userRepo.Object,
