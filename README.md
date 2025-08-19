@@ -10,6 +10,7 @@ This project is a backend solution for managing motorcycle rentals and delivery 
 - [Documentation](#documentation)
   - [ER Diagram](#er-diagram)
   - [System Design](#system-design)
+  - [API Reference (Swagger)](#api-reference-swagger)
 
 ## Features
 
@@ -40,3 +41,15 @@ docker-compose up --build
 
 ### System Design
 ![System Design](docs/architecture.png)
+
+### API Reference (Swagger)
+
+The API is fully documented using Swagger.
+You can explore and test all endpoints directly at:
+```bash
+http://localhost:5000/swagger
+```
+
+> Make sure the API is running before accessing.
+
+![Swagger UI](docs/swagger-ui.png)
