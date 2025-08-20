@@ -86,6 +86,7 @@ Content-Type: application/json
 3. The worker then consumes these messages and generates a `NotificationMessage` only for vehicles from the year 2024.
 
 4. You can then retrieve the generated notification by calling GET /notificationmessage:
+
 **Request**
 ```http
 GET /notificationmessage
