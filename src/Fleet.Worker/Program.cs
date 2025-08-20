@@ -5,16 +5,10 @@ using Microsoft.Extensions.Hosting;
 Host.CreateDefaultBuilder(args)
     .ConfigureServices((ctx, services) =>
     {
-        #region IIS
-        //var rabbitMqUrl = "amqp://guest:guest@localhost:5672";
-        //var apiBaseUrl = "https://localhost:44338/";
-        #endregion
+        var rabbitMqHost = Env.Get(Env.Keys.RabbitMqHost, "localhost");
+        var apiBaseUrl = Env.Get(Env.Keys.ApiBaseUrl, "http://localhost:5000");
 
-        #region Docker
-        var rabbitMqUrl = "amqp://guest:guest@rabbitmq:5672";
-        var apiBaseUrl = "http://api:8080";
-        #endregion
-
+        var rabbitMqUrl = $"amqp://guest:guest@{rabbitMqHost}:5672";
         var queueName = "vehicles.2024.queue";
         var exchangeName = "vehicles.exchange";
 

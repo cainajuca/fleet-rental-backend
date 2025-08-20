@@ -21,10 +21,8 @@ services:
       - rabbitmq
       - api
     environment:
-      - API_BASE_URL=http://api
+      - API_BASE_URL=http://api:8080
       - RABBITMQ_HOST=rabbitmq
-      - MINIO_ENDPOINT=minio
-      - BUCKET_NAME=cnh-images
 
   db:
     image: postgres:15
