@@ -30,9 +30,23 @@ public class NotificationWorker : BackgroundService
     {
         var factory = new ConnectionFactory { Uri = new Uri(_rabbitMqUrl) };
 
-        _connection = factory.CreateConnection();
+        for(int i=0; i < 5; i++)
+        {
+            try
+            {
+                // Attempt to create a connection to RabbitMQ
+                _connection = factory.CreateConnection();
+                break; // Exit loop if successful
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Worker] Failed to connect to RabbitMQ: {ex.Message}");
+                if (i == 4) throw; // Rethrow after 5 attempts
+                Thread.Sleep(5_000); // Wait 5 seconds before retrying
+            }
+        }
 
-        _channel = _connection.CreateModel();
+        _channel = _connection!.CreateModel();
 
         // Assures that the exchange exists before consuming messages
         _channel.ExchangeDeclare(
